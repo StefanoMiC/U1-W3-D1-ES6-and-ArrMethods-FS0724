@@ -47,7 +47,7 @@ console.log(role); // teacher
 // OGGETTI - serve a rappresentare una qualche entità del mondo reale e non, qualsiasi cosa che ha bisogno di essere descritta in dettaglio
 // un oggetto raccoglie le informazioni all'interno di un contesto creato con le GRAFFE e con all'interno coppie CHIAVE-VALORE separate da virgole
 
-const person = {};
+const person = { firstName: "Stefano" };
 
 if (person) {
   // person contiene oggetto vuoto ed è quindi valutato nel contesto booleano dell'if con un'accezione intrinseca di true (perché {} è truthy)
@@ -62,7 +62,7 @@ const car = {
   yearsOnTheRoad: 2,
   owned: true,
   // valutiamo due variabili per usare il loro valore nella creazione sia della proprietà sia del valore
-  [role]: person // "teacher" : {}
+  [role]: person // "teacher" : {name: "Stefano"}
 };
 
 console.log(car);
@@ -126,7 +126,7 @@ const additionalSpecs = {
 
 // CLONAZIONE (SHALLOW - superficiale) TRAMITE SPREAD OPERATOR
 // const car2b = Object.assign({}, car2, additionalSpecs);
-const car2b = { ...car2, ...additionalSpecs };
+const car2b = { ...car2, mods: false, ...additionalSpecs };
 
 // CLONAZIONE PROFONDA TRAMITE STRUCTUREDCLONE
 console.log(car2b);
@@ -199,11 +199,13 @@ const sum = function (n1, n2 = 0) {
   return n1 + n2;
 };
 
-console.log("SUM", sum(1));
+console.log("SUM", sum(5));
 
 const sum1 = (n1, n2) => {
   return n1 + n2;
 };
+
+sum1(3, 2);
 
 // con questa versione il return è implicito (NON CI DEVONO ESSERE LE GRAFFE!!!)
 // funziona solo per funzioni molto semplici che hanno una singola riga di codice,
@@ -253,12 +255,18 @@ console.log(additionalSpecs);
 // const color = car.color
 
 // stiamo dicendo a JS di estrapolare da un oggetto di rifierimento (che si trova dopo =) alcune o tutte le proprietà trasformandole in variabili che contengono il valore associato
-const { brand, color, yearsOnTheRoad, teacher, tintedWindows } = car;
+const {
+  brand,
+  color,
+  yearsOnTheRoad,
+  teacher: { firstName },
+  tintedWindows
+} = car;
 
 console.log(brand);
 console.log(color);
 console.log(yearsOnTheRoad);
-console.log(teacher);
+console.log(firstName);
 console.log(tintedWindows);
 
 // const showMeProperties = function (obj) {
@@ -300,7 +308,7 @@ console.log(first);
 console.log(third);
 console.log(sixth);
 
-// Template literals - stringhe con valori dinamici, che possono essere rotte su più righe
+// Template literals (alt + 96 per windows, option + 9 per mac) - stringhe con valori dinamici, che possono essere rotte su più righe
 
 console.log("La marca della mai auto è " + car2b.brand + "\n numero di incidenti: " + car2b.numberOfCollisions);
 
@@ -308,7 +316,7 @@ console.log(`La marca della mai auto è ${car2b.brand},
      numero di incidenti: ${car2b.numberOfCollisions}`);
 
 // unione di due array diversi tramite spread operator
-const frankenstein = [...position, "blah", "ciao", ...letters];
+const frankenstein = [...position, ...letters, "blah", "ciao"];
 
 console.log(frankenstein);
 
@@ -321,17 +329,23 @@ for (let i = 0; i < letters.length; i++) {
   console.log(letter);
 }
 
-let union = "";
+function unify(array) {
+  let union = "";
 
-letters.forEach((letter, index, array) => {
-  console.log(letter);
-  console.log(index);
-  console.log(array);
+  array.forEach(letter => (union += letter));
+  // letters.forEach((letter, index, array) => {
+  //   console.log(letter);
+  //   console.log(index);
+  //   console.log(array);
 
-  union += letter;
-});
+  //   union += letter;
+  // });
+  return union;
+}
 
-console.log(union);
+const unified = unify(letters);
+
+console.log(unified);
 
 // METODO MAP - si usa per trasformare gli elementi di partenza dentro un NUOVO array ritornato con gli elementi modificati
 // itera l'array di partenza e chiede di restituirgli dalla funzione l'elemento che vogliamo salvare nel nuovo array
@@ -367,8 +381,28 @@ numbers
 
 const underFifty = numbers.filter(num => num < 50);
 console.log(underFifty);
-const noDandE = letters.filter(letter => letter !== "d" && letter !== "e");
+const noDandE = letters.filter(letter => letter !== "d" && letter !== "b");
 console.log(noDandE);
+
+const names = ["stefano", "alessandra", "antonio", "andrea", "luca"];
+
+const discriminated = names.filter(name => !name.startsWith("an"));
+console.log(discriminated);
+const getStefano = names.filter(name => name.startsWith("st"));
+console.log(getStefano);
+console.log(getStefano[0]);
+
+// find - ritorna il primo elemento che verifica la condizione
+
+const findStefano = names.find(name => name.startsWith("st"));
+console.log(findStefano); // ottengo già la stringa senza dover accedere alla posizione dell'array
+
+// findIndex - serve a trovare l'indice di un elemento in una collezione - torna -1 se non trova l'elemento cercato
+
+const andreaIndexOf = names.indexOf("andrea"); // funziona solo con array di primitive
+const andreaIndex = names.findIndex(name => name === "andrea"); // funziona sempre anche e soprattutto quando abbiamo array di oggetti
+console.log(andreaIndexOf);
+console.log(andreaIndex);
 
 // concateniamo operazioni di selezione, modifica e visualizzazione del dato in sequenza
 letters
@@ -376,4 +410,32 @@ letters
   .map(letter => letter.toUpperCase() + "!")
   .forEach(letter => console.log(letter));
 
-// .reduce()
+// .reduce() - cicla in un modo particolare e ha lo scopo di ritornare un singolo valore che è la risultate di operazioni fatte all'interno del reduce
+// ha la particolarità di avere un accumulatore interno, e ci dà sempre accesso all'elemento ciclato in quel momento
+
+const sumNumbers = array => {
+  let sum = 0;
+
+  array.forEach(el => (sum += el));
+
+  return sum;
+};
+
+const summed = sumNumbers(numbers);
+console.log(summed);
+
+console.log(numbers);
+
+// array.reduce((accumulator, currentValue) => { return accumulator + currentValue}, initialValue )
+
+const summedReduce = numbers.reduce((accumulator, currentValue) => {
+  console.log("ACCUMULATOR", accumulator);
+  console.log("CURERNT VALUE", currentValue);
+
+  return accumulator + currentValue;
+}, 0);
+
+const summedReduce2 = numbers.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+
+console.log(summedReduce);
+console.log(summedReduce2);
